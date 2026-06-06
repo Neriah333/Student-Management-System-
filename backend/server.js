@@ -9,6 +9,8 @@ require('./models');
 
 const app = express();
 
+app.use(express.json());
+
 app.use('/api/classstreams', require('./routes/streamRoutes'));
 app.use('/api/students', require('./routes/studentRoutes'));
 app.use('/api/subjects', require('./routes/subjectRoutes'));

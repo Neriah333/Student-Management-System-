@@ -1,17 +1,55 @@
-import { Link } from "react-router-dom";
+import { NavLink } from "react-router-dom";
+import {
+  LayoutDashboard,
+  Users,
+  Layers,
+  BookOpen,
+  ClipboardList,
+  Trophy,
+} from "lucide-react";
 
 export default function Sidebar() {
-  return (
-    <div className="w-64 h-screen bg-gray-900 text-white p-4">
-      <h1 className="text-xl font-bold mb-6">School Admin</h1>
+  const linkClass = ({ isActive }) =>
+    `flex items-center gap-3 p-2 rounded ${
+      isActive ? "bg-blue-500 text-white" : "hover:bg-gray-200"
+    }`;
 
-      <nav className="space-y-3">
-        <Link to="/" className="block">Dashboard</Link>
-        <Link to="/students" className="block">Students</Link>
-        <Link to="/subjects" className="block">Subjects</Link>
-        <Link to="/assessments" className="block">Assessments</Link>
-        <Link to="/rankings" className="block">Rankings</Link>
-      </nav>
+  return (
+    <div className="w-64 h-screen bg-gray-100 p-4 space-y-2">
+
+      <div className="mb-6 mt-4 px-2 border-b pb-4">
+        <h1 className="text-xl font-bold mb-4">Student Management System</h1>
+      </div>
+
+      <NavLink to="/" className={linkClass}>
+        <LayoutDashboard size={18} />
+        Dashboard
+      </NavLink>
+
+      <NavLink to="/classes" className={linkClass}>
+        <Layers size={18} />
+        Streams
+      </NavLink>
+
+      <NavLink to="/students" className={linkClass}>
+        <Users size={18} />
+        Students
+      </NavLink>
+
+      <NavLink to="/subjects" className={linkClass}>
+        <BookOpen size={18} />
+        Subjects
+      </NavLink>
+
+      <NavLink to="/assessments" className={linkClass}>
+        <ClipboardList size={18} />
+        Assessments
+      </NavLink>
+
+      <NavLink to="/rankings" className={linkClass}>
+        <Trophy size={18} />
+        Rankings
+      </NavLink>
     </div>
   );
 }
