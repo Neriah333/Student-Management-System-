@@ -5,13 +5,11 @@ const ClassStream = require('./stream');
 const Subject = require('./subjects');
 const AssessmentScore = require('./assessments');
 const GradingScale = require('./gradingscale');
-
+const SubjectStream = require('./subjectStream'); // ✅ correct file
 
 // ======================
-// RELATIONSHIPS
+// STREAM → STUDENT
 // ======================
-
-// ClassStream → Student
 ClassStream.hasMany(Student, {
   foreignKey: 'classStreamId',
   as: 'students'
@@ -22,20 +20,9 @@ Student.belongsTo(ClassStream, {
   as: 'classStream'
 });
 
-
-// Student → AssessmentScore
-Student.hasMany(AssessmentScore, {
-  foreignKey: 'studentId',
-  as: 'assessments'
-});
-
-AssessmentScore.belongsTo(Student, {
-  foreignKey: 'studentId',
-  as: 'student'
-});
-
-
-// Subject → AssessmentScore
+// ======================
+// SUBJECT → ASSESSMENTS
+// ======================
 Subject.hasMany(AssessmentScore, {
   foreignKey: 'subjectId',
   as: 'assessments'
@@ -46,15 +33,27 @@ AssessmentScore.belongsTo(Subject, {
   as: 'subject'
 });
 
+// ======================
+// MANY TO MANY: SUBJECT ↔ STREAM
+// ======================
+Subject.belongsToMany(ClassStream, {
+  through: SubjectStream,
+  foreignKey: 'subjectId',
+  as: 'streams'
+});
 
-// ======================
-// EXPORTS
-// ======================
+ClassStream.belongsToMany(Subject, {
+  through: SubjectStream,
+  foreignKey: 'classStreamId',
+  as: 'subjects'
+});
+
 module.exports = {
   sequelize,
   Student,
   ClassStream,
   Subject,
   AssessmentScore,
-  GradingScale
+  GradingScale,
+  SubjectStream
 };

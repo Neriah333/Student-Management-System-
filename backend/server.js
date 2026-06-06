@@ -16,6 +16,7 @@ app.use(express.json());
 app.use('/api/classstreams', require('./routes/streamRoutes'));
 app.use('/api/students', require('./routes/studentRoutes'));
 app.use('/api/subjects', require('./routes/subjectRoutes'));
+app.use("/api/subject-streams", require("./routes/subjectstreamRoutes"));
 app.use('/api/assessments', require('./routes/assessmentRoutes'));
 app.use('/api/results', require('./routes/gradingscaleRoutes'));
 app.use('/api/pdf', require('./routes/pdfRoutes'));

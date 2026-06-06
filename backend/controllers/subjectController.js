@@ -15,8 +15,8 @@ exports.createSubject = async (req, res) => {
       });
     }
 
-    name = name.trim();
-    code = code.trim().toUpperCase();
+   name = String(name).trim();
+   code = String(code).trim().toUpperCase();
 
     const existing = await Subject.findOne({
       where: {
