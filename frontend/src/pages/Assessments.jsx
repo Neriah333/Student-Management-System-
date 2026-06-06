@@ -10,18 +10,26 @@ export default function Assessments() {
     studentId: "",
     subjectId: "",
     continuousAssessmentScore: "",
-    examScore: ""
+    examScore: "",
   });
 
+  // FIX: safe extractor
+  const extract = (res) => res?.data?.data ?? res?.data ?? [];
+
   const fetchAll = async () => {
-    const res = await api.get("/assessments");
-    setData(res.data.data || res.data);
+    try {
+      const [a, s, su] = await Promise.all([
+        api.get("/assessments"),
+        api.get("/students"),
+        api.get("/subjects"),
+      ]);
 
-    const stu = await api.get("/students");
-    setStudents(stu.data);
-
-    const sub = await api.get("/subjects");
-    setSubjects(sub.data.data || sub.data);
+      setData(extract(a));
+      setStudents(extract(s));
+      setSubjects(extract(su));
+    } catch (err) {
+      console.log(err);
+    }
   };
 
   useEffect(() => {
@@ -31,13 +39,19 @@ export default function Assessments() {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    await api.post("/assessments", form);
+    await api.post("/assessments", {
+      ...form,
+      studentId: Number(form.studentId),
+      subjectId: Number(form.subjectId),
+      continuousAssessmentScore: Number(form.continuousAssessmentScore),
+      examScore: Number(form.examScore),
+    });
 
     setForm({
       studentId: "",
       subjectId: "",
       continuousAssessmentScore: "",
-      examScore: ""
+      examScore: "",
     });
 
     fetchAll();
@@ -46,16 +60,14 @@ export default function Assessments() {
   return (
     <div className="p-6 space-y-6">
 
-      {/* FORM */}
-      <form onSubmit={handleSubmit} className="bg-gray-100 p-4 space-y-2">
+      <form onSubmit={handleSubmit} className="space-y-3">
 
         <select
           value={form.studentId}
           onChange={(e) => setForm({ ...form, studentId: e.target.value })}
-          className="border p-2 w-full"
         >
-          <option>Select Student</option>
-          {students.map(s => (
+          <option value="">Select Student</option>
+          {students.map((s) => (
             <option key={s.id} value={s.id}>
               {s.firstName} {s.lastName}
             </option>
@@ -65,10 +77,9 @@ export default function Assessments() {
         <select
           value={form.subjectId}
           onChange={(e) => setForm({ ...form, subjectId: e.target.value })}
-          className="border p-2 w-full"
         >
-          <option>Select Subject</option>
-          {subjects.map(s => (
+          <option value="">Select Subject</option>
+          {subjects.map((s) => (
             <option key={s.id} value={s.id}>
               {s.name}
             </option>
@@ -76,27 +87,27 @@ export default function Assessments() {
         </select>
 
         <input
-          placeholder="CA Score"
+          type="number"
+          placeholder="CA"
           value={form.continuousAssessmentScore}
-          onChange={(e) => setForm({ ...form, continuousAssessmentScore: e.target.value })}
-          className="border p-2 w-full"
+          onChange={(e) =>
+            setForm({ ...form, continuousAssessmentScore: e.target.value })
+          }
         />
 
         <input
-          placeholder="Exam Score"
+          type="number"
+          placeholder="Exam"
           value={form.examScore}
-          onChange={(e) => setForm({ ...form, examScore: e.target.value })}
-          className="border p-2 w-full"
+          onChange={(e) =>
+            setForm({ ...form, examScore: e.target.value })
+          }
         />
 
-        <button className="bg-blue-600 text-white px-4 py-2">
-          Save Marks
-        </button>
-
+        <button>Save</button>
       </form>
 
-      {/* TABLE */}
-      <table className="w-full border">
+      <table border="1">
         <thead>
           <tr>
             <th>Student</th>
@@ -107,17 +118,16 @@ export default function Assessments() {
         </thead>
 
         <tbody>
-          {data.map(a => (
+          {data.map((a) => (
             <tr key={a.id}>
-              <td>{a.student.firstName}</td>
-              <td>{a.subject.name}</td>
+              <td>{a.student?.firstName}</td>
+              <td>{a.subject?.name}</td>
               <td>{a.totalScore}</td>
               <td>{a.grade}</td>
             </tr>
           ))}
         </tbody>
       </table>
-
     </div>
   );
 }

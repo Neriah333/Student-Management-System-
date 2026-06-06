@@ -1,11 +1,16 @@
-const express = require('express');
+const express = require("express");
 const router = express.Router();
 
-const controller = require('../controllers/assessmentController');
+const {
+  saveAssessment,
+  getAllAssessments,
+  getAssessmentById,
+  deleteAssessment,
+} = require("../controllers/assessmentController");
 
-router.post('/', controller.saveAssessment); // CREATE + UPDATE (UPSERT)
-router.get('/', controller.getAllAssessments);
-router.get('/:id', controller.getAssessmentById);
-router.delete('/:id', controller.deleteAssessment);
+router.post("/", saveAssessment);
+router.get("/", getAllAssessments);
+router.get("/:id", getAssessmentById);
+router.delete("/:id", deleteAssessment);
 
 module.exports = router;
