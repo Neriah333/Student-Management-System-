@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
 import api from "../services/api";
 
 export default function Students() {
@@ -198,6 +199,13 @@ export default function Students() {
                 >
                   Delete
                 </button>
+
+                <Link
+                  to={`/report-card/${s.id}`}
+                  className="bg-blue-500 px-2 text-white"
+                >
+                  Report
+                </Link>
               </td>
             </tr>
           ))}

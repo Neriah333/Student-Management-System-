@@ -5,6 +5,7 @@ const ClassStream = require("./stream");
 const Subject = require("./subjects");
 const AssessmentScore = require("./assessments");
 const SubjectStream = require("./subjectStream");
+const GradingScale = require("./gradingscale");
 
 // ======================
 // STREAM → STUDENT
@@ -69,4 +70,5 @@ module.exports = {
   Subject,
   AssessmentScore,
   SubjectStream,
+  GradingScale,
 };

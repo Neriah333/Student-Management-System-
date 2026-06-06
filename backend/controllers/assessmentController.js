@@ -1,12 +1,52 @@
-const { AssessmentScore, Student, Subject } = require("../models");
+const { AssessmentScore, Student, Subject, GradingScale } = require("../models");
 
-// ======================
-const getGrade = (total) => {
+const defaultScale = [
+  { grade: "A", minScore: 80, maxScore: 100 },
+  { grade: "B", minScore: 70, maxScore: 79.99 },
+  { grade: "C", minScore: 60, maxScore: 69.99 },
+  { grade: "D", minScore: 50, maxScore: 59.99 },
+  { grade: "F", minScore: 0, maxScore: 49.99 },
+];
+
+const getGradingScales = async () => {
+  const scales = await GradingScale.findAll({ order: [["minScore", "DESC"]] });
+  return scales.length ? scales : defaultScale;
+};
+
+const getGrade = async (total) => {
+  const scales = await getGradingScales();
+  const scale = scales.find((s) => {
+    const min = Number(s.minScore);
+    const max = Number(s.maxScore);
+    return total >= min && total <= max;
+  });
+
+  if (scale) return scale.grade;
+
   if (total >= 80) return "A";
   if (total >= 70) return "B";
   if (total >= 60) return "C";
   if (total >= 50) return "D";
   return "F";
+};
+
+const updateSubjectPositions = async (subjectId, classStreamId) => {
+  const scores = await AssessmentScore.findAll({
+    where: { subjectId },
+    include: [
+      {
+        model: Student,
+        as: "student",
+        where: { classStreamId },
+      },
+    ],
+    order: [["totalScore", "DESC"]],
+  });
+
+  for (let index = 0; index < scores.length; index += 1) {
+    const score = scores[index];
+    await score.update({ subjectPosition: index + 1 });
+  }
 };
 
 // ======================
@@ -40,14 +80,21 @@ exports.saveAssessment = async (req, res) => {
     }
 
     const total = ca + exam;
-    const grade = getGrade(total);
+    const grade = await getGrade(total);
 
     let record = await AssessmentScore.findOne({
       where: { studentId, subjectId },
     });
 
     if (record) {
-      await record.update({ ca, exam, totalScore: total, grade });
+      await record.update({
+        continuousAssessmentScore: ca,
+        examScore: exam,
+        totalScore: total,
+        grade,
+      });
+
+      await updateSubjectPositions(subjectId, student.classStreamId);
 
       return res.json({
         message: "Updated",
@@ -63,6 +110,8 @@ exports.saveAssessment = async (req, res) => {
       totalScore: total,
       grade,
     });
+
+    await updateSubjectPositions(subjectId, student.classStreamId);
 
     return res.status(201).json({
       message: "Created",

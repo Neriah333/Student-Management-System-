@@ -15,7 +15,7 @@ export default function Sidebar() {
     }`;
 
   return (
-    <div className="w-64 h-screen bg-gray-100 p-4 space-y-2">
+    <div className="w-full md:w-64 md:h-screen bg-gray-100 p-4 space-y-2">
 
       <div className="mb-6 mt-4 px-2 border-b pb-4">
         <h1 className="text-xl font-bold mb-4">Student Management System</h1>
