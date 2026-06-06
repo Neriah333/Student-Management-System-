@@ -1,8 +1,10 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
+import { Link } from "react-router-dom";
 
 export default function Stream() {
   const [streams, setStreams] = useState([]);
+
   const [form, setForm] = useState("");
   const [stream, setStream] = useState("");
 
@@ -18,7 +20,7 @@ export default function Stream() {
       const res = await axios.get("http://localhost:5000/api/classstreams");
       setStreams(res.data);
     } catch (err) {
-      console.log(err);
+      console.log(err.response?.data || err.message);
     }
   };
 
@@ -32,6 +34,11 @@ export default function Stream() {
   const handleAdd = async (e) => {
     e.preventDefault();
 
+    if (!form || !stream) {
+      alert("Please select form and stream");
+      return;
+    }
+
     try {
       await axios.post("http://localhost:5000/api/classstreams", {
         form,
@@ -42,7 +49,7 @@ export default function Stream() {
       setStream("");
       fetchStreams();
     } catch (err) {
-      console.log(err);
+      console.log(err.response?.data || err.message);
     }
   };
 
@@ -51,15 +58,17 @@ export default function Stream() {
   // ======================
   const handleDelete = async (id) => {
     try {
-      await axios.delete(`http://localhost:5000/api/classstreams/${id}`);
+      await axios.delete(
+        `http://localhost:5000/api/classstreams/${id}`
+      );
       fetchStreams();
     } catch (err) {
-      console.log(err);
+      console.log(err.response?.data || err.message);
     }
   };
 
   // ======================
-  // OPEN EDIT MODAL
+  // OPEN EDIT
   // ======================
   const openEdit = (s) => {
     setEditId(s.id);
@@ -83,7 +92,7 @@ export default function Stream() {
       setEditId(null);
       fetchStreams();
     } catch (err) {
-      console.log(err);
+      console.log(err.response?.data || err.message);
     }
   };
 
@@ -95,19 +104,31 @@ export default function Stream() {
         <h2 className="text-xl font-bold mb-3">Add Stream</h2>
 
         <form onSubmit={handleAdd} className="flex gap-3">
-          <input
+
+          {/* FORM DROPDOWN */}
+          <select
             className="border p-2 rounded w-1/3"
-            placeholder="Form (e.g 1)"
             value={form}
             onChange={(e) => setForm(e.target.value)}
-          />
+          >
+            <option value="">Select Form</option>
+            <option value="Form 1">Form 1</option>
+            <option value="Form 2">Form 2</option>
+            <option value="Form 3">Form 3</option>
+            <option value="Form 4">Form 4</option>
+          </select>
 
-          <input
+          {/* STREAM DROPDOWN */}
+          <select
             className="border p-2 rounded w-1/3"
-            placeholder="Stream (e.g A)"
             value={stream}
             onChange={(e) => setStream(e.target.value)}
-          />
+          >
+            <option value="">Select Stream</option>
+            <option value="A">A</option>
+            <option value="B">B</option>
+            <option value="C">C</option>
+          </select>
 
           <button className="bg-blue-500 text-white px-4 rounded">
             Add
@@ -118,13 +139,17 @@ export default function Stream() {
       {/* ================= STREAM CARDS ================= */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         {streams.map((s) => (
-          <div key={s.id} className="bg-white p-4 shadow rounded space-y-2">
+          <div
+            key={s.id}
+            className="bg-white p-4 shadow rounded space-y-2"
+          >
+            <Link
+            to={`/streams/${s.id}`}
+            className="text-lg font-bold text-blue-600 hover:underline"
+            >
+            {s.form} {s.stream}
+            </Link>
 
-            <h3 className="text-lg font-bold">
-              Form {s.form} {s.stream}
-            </h3>
-
-            {/* Student count (if backend sends include) */}
             <p className="text-sm text-gray-500">
               Students: {s.students?.length || 0}
             </p>
@@ -155,19 +180,28 @@ export default function Stream() {
 
             <h2 className="text-xl font-bold">Edit Stream</h2>
 
-            <input
+            <select
               className="border p-2 w-full"
               value={editForm}
               onChange={(e) => setEditForm(e.target.value)}
-              placeholder="Form"
-            />
+            >
+              <option value="">Select Form</option>
+              <option value="Form 1">Form 1</option>
+              <option value="Form 2">Form 2</option>
+              <option value="Form 3">Form 3</option>
+              <option value="Form 4">Form 4</option>
+            </select>
 
-            <input
+            <select
               className="border p-2 w-full"
               value={editStream}
               onChange={(e) => setEditStream(e.target.value)}
-              placeholder="Stream"
-            />
+            >
+              <option value="">Select Stream</option>
+              <option value="A">A</option>
+              <option value="B">B</option>
+              <option value="C">C</option>
+            </select>
 
             <div className="flex justify-end gap-2">
               <button

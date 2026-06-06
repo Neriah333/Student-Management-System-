@@ -3,6 +3,7 @@ import Sidebar from "./components/Sidebar";
 
 import Dashboard from "./pages/Dashboard";
 import Streams from "./pages/Streams";
+import StreamDetails from "./pages/StreamDetails";
 import Students from "./pages/Students";
 import Subjects from "./pages/Subjects";
 import Assessments from "./pages/Assessments";
@@ -18,6 +19,7 @@ export default function App() {
           <Routes>
             <Route path="/" element={<Dashboard />} />
             <Route path="/classes" element={<Streams />} />
+            <Route path="/streams/:id" element={<StreamDetails />} />
             <Route path="/students" element={<Students />} />
             <Route path="/subjects" element={<Subjects />} />
             <Route path="/assessments" element={<Assessments />} />

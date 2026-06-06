@@ -45,6 +45,12 @@ exports.createClassStream = async (req, res) => {
 exports.getAllStreams = async (req, res) => {
   try {
     const streams = await ClassStream.findAll({
+      include: [
+        {
+          model: Student,
+          as: 'students'
+        }
+      ],
       order: [['form', 'ASC'], ['stream', 'ASC']]
     });
 

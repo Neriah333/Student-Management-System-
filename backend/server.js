@@ -9,6 +9,8 @@ require('./models');
 
 const app = express();
 
+
+app.use(cors());
 app.use(express.json());
 
 app.use('/api/classstreams', require('./routes/streamRoutes'));
@@ -18,8 +20,6 @@ app.use('/api/assessments', require('./routes/assessmentRoutes'));
 app.use('/api/results', require('./routes/gradingscaleRoutes'));
 app.use('/api/pdf', require('./routes/pdfRoutes'));
 
-app.use(cors());
-app.use(express.json());
 
 app.get('/', (req, res) => res.send('API Running'));
 
