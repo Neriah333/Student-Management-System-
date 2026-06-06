@@ -4,6 +4,7 @@ const Student = require("./students");
 const ClassStream = require("./stream");
 const Subject = require("./subjects");
 const AssessmentScore = require("./assessments");
+const SubjectStream = require("./subjectStream");
 
 // ======================
 // STREAM → STUDENT
@@ -19,7 +20,24 @@ Student.belongsTo(ClassStream, {
 });
 
 // ======================
-// STUDENT → ASSESSMENT (FIXED)
+// SUBJECT ↔ STREAM (MANY TO MANY)
+// ======================
+ClassStream.belongsToMany(Subject, {
+  through: SubjectStream,
+  foreignKey: "classStreamId",
+  otherKey: "subjectId",
+  as: "subjects",
+});
+
+Subject.belongsToMany(ClassStream, {
+  through: SubjectStream,
+  foreignKey: "subjectId",
+  otherKey: "classStreamId",
+  as: "streams",
+});
+
+// ======================
+// STUDENT → ASSESSMENT
 // ======================
 Student.hasMany(AssessmentScore, {
   foreignKey: "studentId",
@@ -50,4 +68,5 @@ module.exports = {
   ClassStream,
   Subject,
   AssessmentScore,
+  SubjectStream,
 };

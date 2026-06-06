@@ -14,11 +14,18 @@ export default function Dashboard() {
   const [students, setStudents] = useState([]);
   const [subjects, setSubjects] = useState([]);
   const [assessments, setAssessments] = useState([]);
+  const [streams, setStreams] = useState([]);
 
   useEffect(() => {
     api.get("/students").then(res => setStudents(res.data));
     api.get("/subjects").then(res => setSubjects(res.data.data || res.data));
     api.get("/assessments").then(res => setAssessments(res.data.data || []));
+    api.get("/classstreams")
+      .then(res => setStreams(res.data.data || res.data || []))
+      .catch(err => {
+        console.error("Failed to load streams:", err.response?.data || err.message);
+        setStreams([]);
+      });
   }, []);
 
   // =========================
@@ -33,7 +40,8 @@ export default function Dashboard() {
   // =========================
   const barData = [
     { name: "Students", value: students.length },
-    { name: "Subjects", value: subjects.length }
+    { name: "Subjects", value: subjects.length },
+    { name: "Streams", value: streams.length }
   ];
 
   // =========================
@@ -63,7 +71,7 @@ export default function Dashboard() {
     <div className="p-6 space-y-8">
 
       {/* ================= CARDS ================= */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
 
         <div className="bg-blue-500 text-white p-4 rounded shadow">
           <h3 className="text-lg font-bold">Students</h3>
@@ -73,6 +81,11 @@ export default function Dashboard() {
         <div className="bg-green-500 text-white p-4 rounded shadow">
           <h3 className="text-lg font-bold">Subjects</h3>
           <p className="text-2xl">{subjects.length}</p>
+        </div>
+
+        <div className="bg-indigo-500 text-white p-4 rounded shadow">
+          <h3 className="text-lg font-bold">Streams</h3>
+          <p className="text-2xl">{streams.length}</p>
         </div>
 
         <div className="bg-purple-500 text-white p-4 rounded shadow">

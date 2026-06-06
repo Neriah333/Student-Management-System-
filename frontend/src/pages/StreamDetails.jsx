@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import axios from "axios";
+import api from "../services/api";
 import { useParams } from "react-router-dom";
 
 export default function StreamDetails() {
@@ -9,10 +9,8 @@ export default function StreamDetails() {
   useEffect(() => {
     const fetchStream = async () => {
       try {
-        const res = await axios.get(
-          `http://localhost:5000/api/classstreams/${id}`
-        );
-        setStream(res.data);
+        const res = await api.get(`/classstreams/${id}`);
+        setStream(res.data.data || res.data || null);
       } catch (err) {
         console.log(err.response?.data || err.message);
       }

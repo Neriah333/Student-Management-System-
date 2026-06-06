@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
-import axios from "axios";
 import { Link } from "react-router-dom";
+import api from "../services/api";
 
 export default function Stream() {
   const [streams, setStreams] = useState([]);
@@ -17,8 +17,8 @@ export default function Stream() {
   // ======================
   const fetchStreams = async () => {
     try {
-      const res = await axios.get("http://localhost:5000/api/classstreams");
-      setStreams(res.data);
+      const res = await api.get("/classstreams");
+      setStreams(res.data.data || res.data || []);
     } catch (err) {
       console.log(err.response?.data || err.message);
     }
@@ -36,7 +36,7 @@ export default function Stream() {
 
     if (!form || !stream) return alert("Select form and stream");
 
-    await axios.post("http://localhost:5000/api/classstreams", {
+    await api.post("/classstreams", {
       form,
       stream,
     });
@@ -50,7 +50,7 @@ export default function Stream() {
   // DELETE STREAM
   // ======================
   const handleDelete = async (id) => {
-    await axios.delete(`http://localhost:5000/api/classstreams/${id}`);
+    await api.delete(`/classstreams/${id}`);
     fetchStreams();
   };
 
@@ -58,7 +58,7 @@ export default function Stream() {
   // UPDATE STREAM
   // ======================
   const handleUpdate = async () => {
-    await axios.put(`http://localhost:5000/api/classstreams/${editId}`, {
+    await api.put(`/classstreams/${editId}`, {
       form: editForm,
       stream: editStream,
     });

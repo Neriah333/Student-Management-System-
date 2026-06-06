@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import axios from "axios";
+import api from "../services/api";
 
 export default function Students() {
   const [students, setStudents] = useState([]);
@@ -19,8 +19,8 @@ export default function Students() {
   // ======================
   const fetchStudents = async () => {
     try {
-      const res = await axios.get("http://localhost:5000/api/students");
-      setStudents(res.data);
+      const res = await api.get("/students");
+      setStudents(res.data.data || res.data || []);
     } catch (err) {
       console.log(err.response?.data || err.message);
     }
@@ -31,8 +31,8 @@ export default function Students() {
   // ======================
   const fetchStreams = async () => {
     try {
-      const res = await axios.get("http://localhost:5000/api/classstreams");
-      setStreams(res.data);
+      const res = await api.get("/classstreams");
+      setStreams(res.data.data || res.data || []);
     } catch (err) {
       console.log(err.response?.data || err.message);
     }
@@ -65,15 +65,9 @@ export default function Students() {
 
     try {
       if (editingId) {
-        await axios.put(
-          `http://localhost:5000/api/students/${editingId}`,
-          payload
-        );
+        await api.put(`/students/${editingId}`, payload);
       } else {
-        await axios.post(
-          "http://localhost:5000/api/students",
-          payload
-        );
+        await api.post("/students", payload);
       }
 
       setForm({ firstName: "", lastName: "", admissionNumber: "" });
@@ -105,7 +99,7 @@ export default function Students() {
   // ======================
   const handleDelete = async (id) => {
     try {
-      await axios.delete(`http://localhost:5000/api/students/${id}`);
+      await api.delete(`/students/${id}`);
       fetchStudents();
     } catch (err) {
       console.log(err.response?.data || err.message);

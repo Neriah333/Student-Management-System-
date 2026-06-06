@@ -21,7 +21,7 @@ export default function Subjects() {
   const fetchSubjects = async () => {
     try {
       const res = await api.get("/subjects");
-      setSubjects(res.data.data);
+      setSubjects(res.data.data || res.data || []);
     } catch (err) {
       console.log(err.response?.data || err.message);
     }
@@ -33,7 +33,7 @@ export default function Subjects() {
   const fetchStreams = async () => {
     try {
       const res = await api.get("/classstreams");
-      setStreams(res.data);
+      setStreams(res.data.data || res.data || []);
     } catch (err) {
       console.log(err.response?.data || err.message);
     }

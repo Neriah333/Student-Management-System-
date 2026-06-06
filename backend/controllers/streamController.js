@@ -9,36 +9,36 @@ exports.createClassStream = async (req, res) => {
 
     if (!form || !stream) {
       return res.status(400).json({
-        message: "Form and stream are required"
+        message: "Form and stream are required",
       });
     }
 
     const existing = await ClassStream.findOne({
-      where: { form, stream }
+      where: { form, stream },
     });
 
     if (existing) {
       return res.status(400).json({
-        message: "Class stream already exists"
+        message: "Class stream already exists",
       });
     }
 
     const newStream = await ClassStream.create({ form, stream });
 
-    res.status(201).json(newStream);
-
+    return res.status(201).json({
+      message: "Stream created successfully",
+      data: newStream,
+    });
   } catch (error) {
-    res.status(500).json({
+    return res.status(500).json({
       message: "Server Error",
-      error: error.message
+      error: error.message,
     });
   }
 };
 
-
-
 // ======================
-// GET ALL STREAMS (FIXED)
+// GET ALL STREAMS
 // ======================
 exports.getAllStreams = async (req, res) => {
   try {
@@ -46,27 +46,31 @@ exports.getAllStreams = async (req, res) => {
       include: [
         {
           model: Student,
-          as: "students"
+          as: "students",
         },
         {
           model: Subject,
-          as: "subjects"   // 🔥 THIS WAS MISSING
-        }
+          as: "subjects",
+          required: false,
+        },
       ],
-      order: [["form", "ASC"], ["stream", "ASC"]]
+      order: [
+        ["form", "ASC"],
+        ["stream", "ASC"],
+      ],
     });
 
-    res.status(200).json(streams);
-
+    return res.status(200).json({
+      count: streams.length,
+      data: streams,
+    });
   } catch (error) {
-    res.status(500).json({
+    return res.status(500).json({
       message: "Server Error",
-      error: error.message
+      error: error.message,
     });
   }
 };
-
-
 
 // ======================
 // GET SINGLE STREAM
@@ -77,32 +81,32 @@ exports.getStreamDetails = async (req, res) => {
       include: [
         {
           model: Student,
-          as: "students"
+          as: "students",
         },
         {
           model: Subject,
-          as: "subjects"   // 🔥 ALSO ADD HERE
-        }
-      ]
+          as: "subjects",
+          required: false,
+        },
+      ],
     });
 
     if (!stream) {
       return res.status(404).json({
-        message: "Class stream not found"
+        message: "Class stream not found",
       });
     }
 
-    res.status(200).json(stream);
-
+    return res.status(200).json({
+      data: stream,
+    });
   } catch (error) {
-    res.status(500).json({
+    return res.status(500).json({
       message: "Server Error",
-      error: error.message
+      error: error.message,
     });
   }
 };
-
-
 
 // ======================
 // UPDATE STREAM
@@ -116,39 +120,36 @@ exports.updateClassStream = async (req, res) => {
 
     if (!classStream) {
       return res.status(404).json({
-        message: "Class stream not found"
+        message: "Class stream not found",
       });
     }
 
     const duplicate = await ClassStream.findOne({
-      where: { form, stream }
+      where: { form, stream },
     });
 
-    if (duplicate && duplicate.id != id) {
+    if (duplicate && duplicate.id !== Number(id)) {
       return res.status(400).json({
-        message: "Another stream already uses this combination"
+        message: "Another stream already uses this combination",
       });
     }
 
     await classStream.update({
       form: form || classStream.form,
-      stream: stream || classStream.stream
+      stream: stream || classStream.stream,
     });
 
-    res.status(200).json({
+    return res.status(200).json({
       message: "Updated successfully",
-      data: classStream
+      data: classStream,
     });
-
   } catch (error) {
-    res.status(500).json({
+    return res.status(500).json({
       message: "Server Error",
-      error: error.message
+      error: error.message,
     });
   }
 };
-
-
 
 // ======================
 // DELETE STREAM
@@ -161,30 +162,29 @@ exports.deleteClassStream = async (req, res) => {
 
     if (!classStream) {
       return res.status(404).json({
-        message: "Class stream not found"
+        message: "Class stream not found",
       });
     }
 
     const studentCount = await Student.count({
-      where: { classStreamId: id }
+      where: { classStreamId: id },
     });
 
     if (studentCount > 0) {
       return res.status(400).json({
-        message: `Cannot delete stream with ${studentCount} students`
+        message: `Cannot delete stream with ${studentCount} students`,
       });
     }
 
     await classStream.destroy();
 
-    res.status(200).json({
-      message: "Deleted successfully"
+    return res.status(200).json({
+      message: "Deleted successfully",
     });
-
   } catch (error) {
-    res.status(500).json({
+    return res.status(500).json({
       message: "Server Error",
-      error: error.message
+      error: error.message,
     });
   }
 };
